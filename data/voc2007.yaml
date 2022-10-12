@@ -6,7 +6,7 @@ val: /home/azureuser/cloudfiles/code/Users/rupaljain/vision_datasets/VOC2007/voc
 test: /home/azureuser/cloudfiles/code/Users/rupaljain/vision_datasets/VOC2007/voc2007_test.txt  # 2510 images, 2501 bboxes
 
 # number of classes
-nc: 20
+nc: 21
 
 # # class names for bbox or polygon based data
 # names: [
