@@ -476,8 +476,6 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         pbar = tqdm(zip(self.img_files, self.label_files), desc='Scanning images', total=len(self.img_files))
         for i, (im_file, lb_file) in enumerate(pbar):
             try:
-                if i % 500 == 0 or i == len(self.img_files) - 1:
-                    print(f"[Rupal] On {i}, {im_file}, {lb_file}")
                 # verify images
                 im = Image.open(im_file)
                 im.verify()  # PIL verify
@@ -491,11 +489,13 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                     nf += 1  # label found
                     with open(lb_file, 'r') as f:
                         l = [x.split() for x in f.read().strip().splitlines()]
-                        if any([len(x) > 8 for x in l]):  # is segment
+                        if any([len(x) > 8 for x in l]):  # is segment (in case of coco)
                             classes = np.array([x[0] for x in l], dtype=np.float32)
                             segments = [np.array(x[1:], dtype=np.float32).reshape(-1, 2) for x in l]  # (cls, xy1...)
                             # Convert the segmentation labels to BBOX labels of format (x_centre, y_centre, w, h)
                             l = np.concatenate((classes.reshape(-1, 1), segments2boxes(segments)), 1)  # (cls, xywh)
+                            
+                        # Other datasets w/o segmentation mask will go here 
                         l = np.array(l, dtype=np.float32)
                     if len(l):
                         assert l.shape[1] == 5, 'labels require 5 columns each'
@@ -509,6 +509,10 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                     nm += 1  # label missing
                     l = np.zeros((0, 5), dtype=np.float32)
                 x[im_file] = [l, shape, segments]
+
+                if i % 500 == 0 or i == len(self.img_files) - 1:
+                    print(f"[Rupal] Finished {i}, {im_file}, {lb_file}")
+                    print(f"[Rupal] {l}, {shape}, {segments}")
             except Exception as e:
                 nc += 1
                 print(f'{prefix}WARNING: Ignoring corrupted image and/or label {im_file}: {e}')

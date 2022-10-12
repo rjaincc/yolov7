@@ -6,35 +6,35 @@ val: /home/azureuser/cloudfiles/code/Users/rupaljain/vision_datasets/VOC2007/voc
 test: /home/azureuser/cloudfiles/code/Users/rupaljain/vision_datasets/VOC2007/voc2007_test.txt  # 2510 images, 2501 bboxes
 
 # number of classes
-nc: 21
+nc: 20
 
-# # class names for bbox or polygon based data
-# names: [
-#     "dog", "person", "train", "sofa", "chair", "car", "pottedplant", "diningtable", "horse", "cat", "cow", "bus", 
-#     "bicycle", "aeroplane", "motorbike", "tvmonitor", "bird", "bottle", "boat", "sheep"
-# ]
-
-# For data from segmentatin masks
+# class names for bbox or polygon based data
 names: [
-    "background",
-    "aeroplane",
-    "bicycle",
-    "bird",
-    "boat",
-    "bottle",
-    "bus",
-    "car",
-    "cat",
-    "chair",
-    "cow",
-    "diningtable",
-    "dog",
-    "horse",
-    "motorbike",
-    "person",
-    "potted plant",
-    "sheep",
-    "sofa",
-    "train",
-    "tvmonitor",
+    "dog", "person", "train", "sofa", "chair", "car", "pottedplant", "diningtable", "horse", "cat", "cow", "bus", 
+    "bicycle", "aeroplane", "motorbike", "tvmonitor", "bird", "bottle", "boat", "sheep"
 ]
+
+# # For data from segmentatin masks
+# names: [
+#     "background",
+#     "aeroplane",
+#     "bicycle",
+#     "bird",
+#     "boat",
+#     "bottle",
+#     "bus",
+#     "car",
+#     "cat",
+#     "chair",
+#     "cow",
+#     "diningtable",
+#     "dog",
+#     "horse",
+#     "motorbike",
+#     "person",
+#     "potted plant",
+#     "sheep",
+#     "sofa",
+#     "train",
+#     "tvmonitor",
+# ]
