@@ -361,7 +361,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         self.mosaic = self.augment and not self.rect  # load 4 images at a time into a mosaic (only during training)
         self.mosaic_border = [-img_size // 2, -img_size // 2]
         self.stride = stride
-        self.path = path        
+        self.path = path      # /home/azureuser/cloudfiles/code/Users/rupaljain/vision_datasets/VOC2007/voc2007_train.txt   
         #self.albumentations = Albumentations() if augment else None
 
         try:
@@ -388,6 +388,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
         # Check cache
         self.label_files = img2label_paths(self.img_files)  # labels
         cache_path = (p if p.is_file() else Path(self.label_files[0]).parent).with_suffix('.cache')  # cached labels
+        print("[Rupal] ", cache_path, cache_path.is_file())
         if cache_path.is_file():
             cache, exists = torch.load(cache_path), True  # load
             #if cache['hash'] != get_hash(self.label_files + self.img_files) or 'version' not in cache:  # changed
@@ -468,12 +469,15 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             pbar.close()
 
     def cache_labels(self, path=Path('./labels.cache'), prefix=''):
+        print(f"[Rupal] Caching labels...{len(self.img_files)}, {len(self.label_files)}")
         # Cache dataset labels, check images and read shapes
         x = {}  # dict
         nm, nf, ne, nc = 0, 0, 0, 0  # number missing, found, empty, duplicate
         pbar = tqdm(zip(self.img_files, self.label_files), desc='Scanning images', total=len(self.img_files))
         for i, (im_file, lb_file) in enumerate(pbar):
             try:
+                if i % 500 == 0 or i == len(self.img_files) - 1:
+                    print(f"[Rupal] On {i}, {im_file}, {lb_file}")
                 # verify images
                 im = Image.open(im_file)
                 im.verify()  # PIL verify
@@ -490,6 +494,7 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
                         if any([len(x) > 8 for x in l]):  # is segment
                             classes = np.array([x[0] for x in l], dtype=np.float32)
                             segments = [np.array(x[1:], dtype=np.float32).reshape(-1, 2) for x in l]  # (cls, xy1...)
+                            # Convert the segmentation labels to BBOX labels of format (x_centre, y_centre, w, h)
                             l = np.concatenate((classes.reshape(-1, 1), segments2boxes(segments)), 1)  # (cls, xywh)
                         l = np.array(l, dtype=np.float32)
                     if len(l):
@@ -511,6 +516,8 @@ class LoadImagesAndLabels(Dataset):  # for training/testing
             pbar.desc = f"{prefix}Scanning '{path.parent / path.stem}' images and labels... " \
                         f"{nf} found, {nm} missing, {ne} empty, {nc} corrupted"
         pbar.close()
+
+        print("[Rupal] label caching done")
 
         if nf == 0:
             print(f'{prefix}WARNING: No labels found in {path}. See {help_url}')
